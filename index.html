@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+
+	<title> A* Algorithm </title>
+	<script defer>
+		var map;
+
+		// Markers are Points
+		var markers = [];
+
+		// Paths are Polylines
+		var paths = [];
+		var distances = [];
+		var adjacency_matrix = [];
+
+		var itb_location = [-6.891117, 107.609875];
+		var map_style = [
+			{
+				"elementType": "geometry",
+				"stylers": [
+					{
+						"color": "#242f3e"
+					}
+				]
+			},
+			{
+				"elementType": "labels.text.fill",
+				"stylers": [
+					{
+						"color": "#746855"
+					}
+				]
+			},
+			{
+				"elementType": "labels.text.stroke",
+				"stylers": [
+					{
+						"color": "#242f3e"
+					}
+				]
+			},
+			{
+				"featureType": "administrative",
+				"elementType": "geometry",
+				"stylers": [
+					{
+						"visibility": "off"
+					}
+				]
+			},
+			{
+				"featureType": "administrative.land_parcel",
+				"elementType": "labels",
+				"stylers": [
+					{
+						"visibility": "off"
+					}
+				]
+			},
+			{
+				"featureType": "administrative.locality",
+				"elementType": "labels.text.fill",
+				"stylers": [
+					{
+						"color": "#d59563"
+					}
+				]
+			},
+			{
+				"featureType": "poi",
+				"stylers": [
+					{
+						"visibility": "off"
+					}
+				]
+			},
+			{
+				"featureType": "poi",
+				"elementType": "labels.text.fill",
+				"stylers": [
+					{
+						"color": "#d59563"
+					}
+				]
+			},
+			{
+				"featureType": "poi.park",
+				"elementType": "geometry",
+				"stylers": [
+					{
+						"color": "#263c3f"
+					}
+				]
+			},
+			{
+				"featureType": "poi.park",
+				"elementType": "labels.text.fill",
+				"stylers": [
+					{
+						"color": "#6b9a76"
+					}
+				]
+			},
+			{
+				"featureType": "road",
+				"elementType": "geometry",
+				"stylers": [
+					{
+						"color": "#38414e"
+					}
+				]
+			},
+			{
+				"featureType": "road",
+				"elementType": "geometry.stroke",
+				"stylers": [
+					{
+						"color": "#212a37"
+					}
+				]
+			},
+			{
+				"featureType": "road",
+				"elementType": "labels.icon",
+				"stylers": [
+					{
+						"visibility": "off"
+					}
+				]
+			},
+			{
+				"featureType": "road",
+				"elementType": "labels.text.fill",
+				"stylers": [
+					{
+						"color": "#9ca5b3"
+					}
+				]
+			},
+			{
+				"featureType": "road.highway",
+				"elementType": "geometry",
+				"stylers": [
+					{
+						"color": "#746855"
+					}
+				]
+			},
+			{
+				"featureType": "road.highway",
+				"elementType": "geometry.stroke",
+				"stylers": [
+					{
+						"color": "#1f2835"
+					}
+				]
+			},
+			{
+				"featureType": "road.highway",
+				"elementType": "labels.text.fill",
+				"stylers": [
+					{
+						"color": "#f3d19c"
+					}
+				]
+			},
+			{
+				"featureType": "road.local",
+				"elementType": "labels",
+				"stylers": [
+					{
+						"visibility": "off"
+					}
+				]
+			},
+			{
+				"featureType": "transit",
+				"stylers": [
+					{
+						"visibility": "off"
+					}
+				]
+			},
+			{
+				"featureType": "transit",
+				"elementType": "geometry",
+				"stylers": [
+					{
+						"color": "#2f3948"
+					}
+				]
+			},
+			{
+				"featureType": "transit.station",
+				"elementType": "labels.text.fill",
+				"stylers": [
+					{
+						"color": "#d59563"
+					}
+				]
+			},
+			{
+				"featureType": "water",
+				"elementType": "geometry",
+				"stylers": [
+					{
+						"color": "#17263c"
+					}
+				]
+			},
+			{
+				"featureType": "water",
+				"elementType": "labels.text.fill",
+				"stylers": [
+					{
+						"color": "#515c6d"
+					}
+				]
+			},
+			{
+				"featureType": "water",
+				"elementType": "labels.text.stroke",
+				"stylers": [
+					{
+						"color": "#17263c"
+					}
+				]
+			}
+		]
+
+		var addPathButton = document.getElementById('addPathButton');
+		var getPathButton = document.getElementById('getPathButton');
+		var selectPath_1 = document.getElementById('path-1');
+		var selectPath_2 = document.getElementById('path-2');
+		var selectSource = document.getElementById('source-select');
+		var selectDestination = document.getElementById('destination-select');
+		var pointList = document.getElementById('pointList');
+		var pathList = document.getElementById('pathList');
+
+		function initMap() {
+			var itb = { lat: itb_location[0], lng: itb_location[1] };
+
+			map = new google.maps.Map(document.getElementById('map'), {
+				zoom: 16,
+				center: itb,
+				mapTypeId: 'roadmap',
+				styles: map_style
+			});
+
+			map.addListener('click', function (e) {
+				addMarker(e.latLng, map);
+			});
+		}
+
+
+	</script>
+	<script async defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZHksbwZ4w1JsRAHm3ZtdykkxiNwtJgkk&callback=initMap&libraries=geometry"></script>
+	<script async defer src="{{ url_for('static', filename='jquery.js') }}"></script>
+</head>
+
+<body>
+
+
+	<div class="container">
+		<div class="navbar">
+
+			<div class="nav-header">
+				<span class="header" style="color: #FFFFFF;">A* Algorithm</span>
+			</div>
+
+			<div class="controller-container">
+
+				<div class="controller">
+					<span class="marker-header">Points List</span>
+
+
+					<ol class="list" id="pointList">
+					</ol>
+
+					<button id="clear_point_button" onclick="clearMarker()" class="controller-button">Clear</button>
+				</div>
+
+				<div class="controller">
+					<span class="marker-header">Paths List</span>
+
+					<ol class="list" id="pathList">
+					</ol>
+
+					<button id="clearButton" class="controller-button" onclick="clearPath()">Clear</button>
+				</div>
+
+				<div class="controller">
+
+					<span class="marker-header">Add Path</span>
+
+					<div class="path-controller">
+
+						<select id="path-1" class="path-option">
+						</select>
+
+
+						"<li>" + path.length + "</li>";
+
+						<select id="path-2" class="path-option">
+						</select>
+
+						<button id="addPathButton" class="controller-button">Add Path</button>
+					</div>
+
+
+				</div>
+				<button class="clear-button" id="clearAllButton" onclick="clearAll()">Clear All Points and
+					Paths</button>
+
+				<div class="controller" style="margin-top: 50px;text-align: center">
+					<span class="marker-header" style="margin-bottom: 20px; display: block;">Where do you want to
+						go?</span>
+
+					<div style="margin-bottom: 10px; display: grid; grid-template-columns: repeat(2,1fr);">
+
+						<span>From : </span> <select id="source-select" class="source-dest-option"></select>
+						<span>To :</span><select id="destination-select" class="source-dest-option"></select>
+
+					</div>
+
+					<button class="clear-button" id="getPathButton" onclick="getShortestPath()"
+						style="min-width: 200px; color: white; background-color: green; border-width: 1; border-color: green; padding: 10px;">Find
+						Path</button>
+				</div>
+
+				<!-- <button class="clear-button" id="getShortestPath" onclick="getShortestPath()">Find Path</button> -->
+
+			</div>
+
+		</div>
+
+		<div id="map" class="mapCanvas">
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src="{{ url_for('static', filename='map.js') }}"></script>
+</body>
+
+</html>

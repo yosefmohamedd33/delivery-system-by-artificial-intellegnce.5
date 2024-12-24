@@ -1,0 +1,121 @@
+html, body {
+	margin:0;
+	padding:0;
+	height:100%;
+	font-family: 'Roboto', sans-serif;
+}
+
+span {
+	color:#FFFFFF;
+}
+button {
+	background: #302550;
+	color:#FFFFFF;
+	border-width: 0;
+	 box-shadow: 0px 0px 1px #6e6ed8;
+	padding: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-radius: 8px;
+
+	font-weight: 500;
+}
+
+button:hover{
+	background: #302550;
+	color:#FFFFFF;
+	border-width: 0;
+	box-shadow: 0px 0px 3px #6e6ed8;
+	padding: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-radius: 8px;
+}
+
+.container {
+	display: grid;
+	grid-template-columns: repeat(20,1fr);
+	height:100%;
+}
+
+.navbar{
+	background: #363651;
+	grid-column: 1/5;
+}
+
+
+.mapCanvas {
+	grid-column: 5/21;
+	background: #f66;
+}
+
+.header {
+	color: #363651;
+}
+
+
+.controller-button {
+	display: inline;
+	float : right;
+}
+
+.nav-header{
+	text-align: center;
+	font-size: 28px;
+	font-weight: 700;
+	padding: 20px;
+	margin-bottom: 10px;
+	background: #363651;
+}
+
+.controller-container{
+	margin:0 auto;
+	width:90%;
+}
+
+
+.controller{
+	margin:0 auto;
+	margin-top: 30px;
+	padding-bottom: 30px;
+}
+
+.marker-header{
+	font-size: 20px;
+}
+
+.markers {
+}
+
+.list {
+	min-height: 100px;
+	max-height: 100px;
+	margin-top: 5px;
+	background: #FFFFFF;
+	border-radius: 5px;
+	padding-left:20px;
+	text-align: left;
+	overflow-y: scroll;
+}
+
+.path-controller {
+	display:grid;
+	grid-template-columns: repeat(3,1fr);
+}
+
+#addPathButton {
+	margin: 0;
+	grid-column: 4/6;
+}
+
+
+#clearAllButton{
+	width:100%;
+	padding: 10px;
+	background-color: #BB0000;
+}
+
+.source-dest-option {
+	min-width: 100px;
+	max-width: 100px;
+}
